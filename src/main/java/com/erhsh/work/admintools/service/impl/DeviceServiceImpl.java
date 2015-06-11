@@ -54,11 +54,11 @@ public class DeviceServiceImpl implements IDeviceService {
 		result.setAddr(addr);
 		result.setCreateStamps(createStamps);
 
-		result.setOwner(getUser(id));
+		result.setOwner(getDeviceOwner(id));
 		return result;
 	}
 
-	public UserVO getUser(String id) {
+	private UserVO getDeviceOwner(String id) {
 		UserVO result = new UserVO();
 		String owner = jedis.hget("device:owner", id);
 		if (null == owner) {
@@ -67,10 +67,10 @@ public class DeviceServiceImpl implements IDeviceService {
 		}
 
 		// 用户信息
-		String email = jedis.hget("user:email", id); // 邮箱
-		String nick = jedis.hget("user:nick", id); // 昵称
+		String email = jedis.hget("user:email", owner); // 邮箱
+		String nick = jedis.hget("user:nick", owner); // 昵称
 
-		result.setId(id);
+		result.setId(owner);
 		result.setLoginName(email);
 		result.setNick(nick);
 
