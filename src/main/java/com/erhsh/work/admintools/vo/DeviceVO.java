@@ -3,6 +3,7 @@ package com.erhsh.work.admintools.vo;
 public class DeviceVO {
 	private String id;
 	private String mac;
+	private String mac2;
 	private String name;
 	private String dv;
 	private String sn;
@@ -30,6 +31,14 @@ public class DeviceVO {
 
 	public void setMac(String mac) {
 		this.mac = mac;
+	}
+
+	public String getMac2() {
+		return mac2;
+	}
+
+	public void setMac2(String mac2) {
+		this.mac2 = mac2;
 	}
 
 	public String getName() {
@@ -88,12 +97,14 @@ public class DeviceVO {
 		this.owner = owner;
 	}
 
+	public boolean isEmpty() {
+		return null == this.id || null == this.mac || "".equals(this.mac);
+	}
+
 	@Override
 	public String toString() {
-		return "DeviceVO [id=" + id + ", mac=" + mac + ", name=" + name
-				+ ", dv=" + dv + ", sn=" + sn + ", addr=" + addr
-				+ ", createStamps=" + createStamps + ", parent=" + parent
-				+ ", owner=" + owner + "]";
+		return "DeviceVO [id=" + id + ", mac=" + mac + ", mac2=" + mac2
+				+ ", name=" + name + "]";
 	}
 
 }

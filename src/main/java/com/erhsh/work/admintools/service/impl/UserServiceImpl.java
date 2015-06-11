@@ -30,6 +30,10 @@ public class UserServiceImpl implements IUserService {
 	public UserVO getUser(String id) {
 		UserVO result = new UserVO();
 
+		if (null == id) {
+			return result;
+		}
+
 		// 用户扩展信息
 		String email = jedis.hget("user:email", id); // 邮箱
 		String nick = jedis.hget("user:nick", id); // 昵称
@@ -59,6 +63,20 @@ public class UserServiceImpl implements IUserService {
 			result.setFamily(new FamilyVO(familyId));
 		}
 		result.setDevices(devices);
+
+		return result;
+	}
+
+	public DeviceVO getDevice(String id) {
+		DeviceVO result = new DeviceVO(id);
+		String mac = jedis.hget("device:mac", id);
+		String mac2 = jedis.hget("device:mac2", id);
+		String name = jedis.hget("device:name", id);
+
+		result.setId(id);
+		result.setMac(mac);
+		result.setMac2(mac2);
+		result.setName(name);
 
 		return result;
 	}

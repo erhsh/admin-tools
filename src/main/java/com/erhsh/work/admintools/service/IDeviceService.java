@@ -15,18 +15,6 @@ public interface IDeviceService {
 	DeviceVO getDevice(String id);
 
 	/**
-	 * 获取全部用户信息
-	 * 
-	 * @return List
-	 */
-	List<DeviceVO> getAllDevices();
-
-	/**
-	 * 模糊查询设备
-	 * 
-	 * @return target
-	 */
-	/**
 	 * 模糊查询设备
 	 * 
 	 * @param target
@@ -34,6 +22,13 @@ public interface IDeviceService {
 	 * @return 设备列表
 	 */
 	List<DeviceVO> getDevices(String target);
+
+	/**
+	 * 重值设备属主
+	 * 
+	 * @param deviceId
+	 */
+	void resetDeviceOwner(String deviceId);
 
 	/**
 	 * 关闭资源

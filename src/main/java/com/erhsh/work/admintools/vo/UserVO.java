@@ -87,11 +87,14 @@ public class UserVO {
 		this.emailAvailable = emailAvailable;
 	}
 
+	public boolean isEmpty() {
+		return (null == this.id) || (null == this.loginName);
+	}
+
 	@Override
 	public String toString() {
 		return "UserVO [id=" + id + ", loginName=" + loginName + ", nick="
-				+ nick + ", email=" + email + ", phone=" + phone + ", family="
-				+ family + "]";
+				+ nick + ", email=" + email + "]";
 	}
 
 }
