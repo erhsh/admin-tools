@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import com.erhsh.work.admintools.service.IDeviceService;
 import com.erhsh.work.admintools.utils.JedisHelper;
@@ -108,7 +109,21 @@ public class DeviceServiceImpl implements IDeviceService {
 	@Override
 	public void resetDeviceOwner(String deviceId) {
 		LOG.debug("resetDeviceOwner deviceId {}", deviceId);
-		jedis.hdel("device:owner", deviceId);
+		String userId = jedis.hget("device:owner", deviceId);
+
+		if (null == userId || "".equals(userId)) {
+			return;
+		}
+
+		Transaction trans = jedis.multi();
+
+		// 用户找设备关系清除
+		trans.srem("u:" + userId + ":devices", deviceId);
+
+		// 设备找用户关系清除
+		trans.hdel("device:owner", deviceId);
+
+		trans.exec();
 	}
 
 	@Override

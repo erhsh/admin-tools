@@ -1,6 +1,5 @@
 package com.erhsh.work.admintools.main;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -10,6 +9,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -19,15 +20,17 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.erhsh.work.admintools.service.IDeviceService;
 import com.erhsh.work.admintools.service.impl.DeviceServiceImpl;
 import com.erhsh.work.admintools.vo.DeviceVO;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import com.erhsh.work.admintools.vo.UserVO;
 
 public class DeviceInfoComposite extends Composite {
 	private class TableLabelProvider extends LabelProvider implements
@@ -67,9 +70,8 @@ public class DeviceInfoComposite extends Composite {
 				colText = deviceVO.getCreateStamps();
 				break;
 			case 8:
-				colText = deviceVO.getOwner() == null
-						|| deviceVO.getOwner().isEmpty() ? "" : deviceVO
-						.getOwner().toString();
+				colText = (deviceVO.getOwner() == null || deviceVO.getOwner()
+						.isEmpty()) ? "" : deviceVO.getOwner().toString();
 				break;
 			default:
 				break;
@@ -219,9 +221,37 @@ public class DeviceInfoComposite extends Composite {
 		TableColumn tableColumn_1 = tableViewerColumn_4.getColumn();
 		tableColumn_1.setWidth(100);
 		tableColumn_1.setText("绑定用户");
+
+		Menu menu = new Menu(table);
+		table.setMenu(menu);
+
+		MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+		menuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				resetDeviceOwner();
+				doGetDevices();
+			}
+		});
+		menuItem.setText("清除用户绑定");
 		tableViewer.setLabelProvider(new TableLabelProvider());
 		tableViewer.setContentProvider(new ContentProvider());
 
+	}
+
+	protected void resetDeviceOwner() {
+		TableItem[] selectItems = table.getSelection();
+		for (TableItem selectItem : selectItems) {
+			Object data = selectItem.getData();
+
+			if (data instanceof UserVO) {
+				IDeviceService deviceService = new DeviceServiceImpl();
+				String deviceId = ((DeviceVO) data).getId();
+				System.out.println("reset device owner, deviceId= " + deviceId);
+				deviceService.resetDeviceOwner(deviceId);
+				deviceService.destroy();
+			}
+		}
 	}
 
 	protected void doGetDevices() {
@@ -240,5 +270,4 @@ public class DeviceInfoComposite extends Composite {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-
 }

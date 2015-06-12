@@ -71,6 +71,20 @@ public class UserInfoComposite extends Composite {
 			case 5:
 				colText = userVO.getEmailAvailable();
 				break;
+			case 6:
+				List<UserVO> parents = userVO.getParents();
+				if (null == parents) {
+					break;
+				}
+				colText = parents.toString();
+				break;
+			case 7:
+				List<UserVO> children = userVO.getChildren();
+				if (null == children) {
+					break;
+				}
+				colText = children.toString();
+				break;
 			default:
 				break;
 			}
@@ -254,6 +268,18 @@ public class UserInfoComposite extends Composite {
 			}
 		});
 		menuItem_5.setText("删除用户");
+
+		TableViewerColumn tableViewerColumn_6 = new TableViewerColumn(
+				tableViewer, SWT.NONE);
+		TableColumn tblclmns = tableViewerColumn_6.getColumn();
+		tblclmns.setWidth(100);
+		tblclmns.setText("加入的家庭(s)");
+
+		TableViewerColumn tableViewerColumn_7 = new TableViewerColumn(
+				tableViewer, SWT.NONE);
+		TableColumn tableColumn_6 = tableViewerColumn_7.getColumn();
+		tableColumn_6.setWidth(100);
+		tableColumn_6.setText("加入我的用户");
 		tableViewer.setLabelProvider(new TableLabelProvider());
 		tableViewer.setContentProvider(new ContentProvider());
 

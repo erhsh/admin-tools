@@ -11,7 +11,9 @@ public class UserVO {
 	private String failedLoginTimes;
 	private String emailAvailable;
 
-	private FamilyVO family;
+	private List<UserVO> parents;
+
+	private List<UserVO> children;
 
 	private List<DeviceVO> devices;
 
@@ -63,12 +65,20 @@ public class UserVO {
 		this.failedLoginTimes = failedLoginTimes;
 	}
 
-	public FamilyVO getFamily() {
-		return family;
+	public List<UserVO> getParents() {
+		return parents;
 	}
 
-	public void setFamily(FamilyVO family) {
-		this.family = family;
+	public void setParents(List<UserVO> parents) {
+		this.parents = parents;
+	}
+
+	public List<UserVO> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<UserVO> children) {
+		this.children = children;
 	}
 
 	public List<DeviceVO> getDevices() {
@@ -88,13 +98,13 @@ public class UserVO {
 	}
 
 	public boolean isEmpty() {
-		return (null == this.id) || (null == this.loginName);
+		return null == this.id;
 	}
 
 	@Override
 	public String toString() {
 		return "UserVO [id=" + id + ", loginName=" + loginName + ", nick="
-				+ nick + ", email=" + email + "]";
+				+ nick + "]";
 	}
 
 }

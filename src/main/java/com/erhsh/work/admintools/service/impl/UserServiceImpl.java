@@ -15,7 +15,6 @@ import com.erhsh.work.admintools.service.IDeviceService;
 import com.erhsh.work.admintools.service.IUserService;
 import com.erhsh.work.admintools.utils.JedisHelper;
 import com.erhsh.work.admintools.vo.DeviceVO;
-import com.erhsh.work.admintools.vo.FamilyVO;
 import com.erhsh.work.admintools.vo.UserVO;
 
 public class UserServiceImpl implements IUserService {
@@ -36,11 +35,24 @@ public class UserServiceImpl implements IUserService {
 
 		// 用户扩展信息
 		String email = jedis.hget("user:email", id); // 邮箱
+		if (null == email) {
+			return result;
+		}
+
 		String nick = jedis.hget("user:nick", id); // 昵称
 		String phone = jedis.hget("user:phone", id); // 电话
 		String familyId = jedis.hget("user:family", id); // 所在家庭
 		String failedLoginTimes = jedis.get("user:failedLoginTimes:" + id);
 		String emailAvailable = jedis.hget("user:emailavailable", id);
+		Set<String> childIds = jedis.smembers("family:" + id);
+
+		List<UserVO> children = new ArrayList<UserVO>();
+		for (String childId : childIds) {
+			if (id.equals(childId)) {
+				continue;
+			}
+			children.add(getUserBasicInfo(childId));
+		}
 
 		IDeviceService devService = new DeviceServiceImpl();
 		List<DeviceVO> devices = new ArrayList<DeviceVO>();
@@ -59,11 +71,13 @@ public class UserServiceImpl implements IUserService {
 		result.setFailedLoginTimes(failedLoginTimes);
 		result.setEmailAvailable(emailAvailable);
 
-		if (null != familyId) {
-			result.setFamily(new FamilyVO(familyId));
+		List<UserVO> parents = new ArrayList<UserVO>();
+		if (null != familyId && !familyId.equals(id)) {
+			parents.add(getUserBasicInfo(familyId));
 		}
+		result.setParents(parents);
 		result.setDevices(devices);
-
+		result.setChildren(children);
 		return result;
 	}
 
@@ -153,9 +167,17 @@ public class UserServiceImpl implements IUserService {
 		trans.hdel("user:mailtoid", mail);
 		trans.del("user:mobileid:" + id);
 		trans.del("user:failedLoginTimes:" + id);
+
+		// 这个用户绑定的设备
+		Set<String> devIds = jedis.smembers("u:" + id + ":devices");
+		for (String devId : devIds) {
+			// 逐个解绑设备
+			trans.hdel("device:owner", devId);
+		}
+
 		trans.del("u:" + id + ":devices");
 		trans.del("family:" + id);
-		trans.hdel("device:owner", id);
+
 		trans.exec();
 	}
 
@@ -164,4 +186,23 @@ public class UserServiceImpl implements IUserService {
 		JedisHelper.returnJedis(jedis);
 	}
 
+	private UserVO getUserBasicInfo(String id) {
+		if (null == id) {
+			return null;
+		}
+
+		String loginName = jedis.hget("user:email", id);
+		if (null == loginName) {
+			return null;
+		}
+
+		String nick = jedis.hget("user:nick", id);
+
+		UserVO userVO = new UserVO();
+		userVO.setId(id);
+		userVO.setLoginName(loginName);
+		userVO.setNick(nick);
+		return userVO;
+
+	}
 }
