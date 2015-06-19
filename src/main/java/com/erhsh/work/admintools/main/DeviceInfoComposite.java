@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Text;
 import com.erhsh.work.admintools.service.IDeviceService;
 import com.erhsh.work.admintools.service.impl.DeviceServiceImpl;
 import com.erhsh.work.admintools.vo.DeviceVO;
-import com.erhsh.work.admintools.vo.UserVO;
 
 public class DeviceInfoComposite extends Composite {
 	private class TableLabelProvider extends LabelProvider implements
@@ -244,7 +243,7 @@ public class DeviceInfoComposite extends Composite {
 		for (TableItem selectItem : selectItems) {
 			Object data = selectItem.getData();
 
-			if (data instanceof UserVO) {
+			if (data instanceof DeviceVO) {
 				IDeviceService deviceService = new DeviceServiceImpl();
 				String deviceId = ((DeviceVO) data).getId();
 				System.out.println("reset device owner, deviceId= " + deviceId);
